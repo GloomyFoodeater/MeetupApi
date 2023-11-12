@@ -1,11 +1,23 @@
+using ApplicationCore.Interfaces.Repositories;
+using ApplicationCore.MapperProfiles;
+using ApplicationCore.Services;
+using Infrastructure;
+using Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddControllers(options => options.SuppressAsyncSuffixInActionNames = false);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(typeof(MeetupProfile));
+builder.Services.AddTransient<IMeetupRepository, MeetupRepository>();
+builder.Services.AddTransient<MeetupService>();
+builder.Services.AddDbContext<ApplicationContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MeetupDatabase"));
+});
 
 var app = builder.Build();
 
