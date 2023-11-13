@@ -2,13 +2,13 @@
 using ApplicationCore.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repositories;
+namespace Infrastructure.Persistence.Repositories;
 
 /// <summary>
 /// Implementation of <see cref="IMeetupRepository"/> by wrapping 
 /// <see cref="ApplicationContext.Meetups"/> methods
 /// </summary>
-public class MeetupRepository : IMeetupRepository
+internal class MeetupRepository : IMeetupRepository
 {
     private readonly ApplicationContext _context;
 
