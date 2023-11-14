@@ -1,6 +1,5 @@
 ﻿using ApplicationCore.Entities;
 using ApplicationCore.Interfaces.Repositories;
-using ApplicationCore.Services;
 using Infrastructure.Persistence.Repositories;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
@@ -13,12 +12,12 @@ using Infrastructure.Services;
 namespace Infrastructure;
 
 /// <summary>
-/// Class to inject infrastructure services
+/// Injector of internal infrastructure services
 /// </summary>
 public static class DependencyInjection
 {
     /// <summary>
-    /// Configure infrastructure services and add them into given collection
+    /// Configure infrastructure services for application and add them into given collection
     /// </summary>
     /// <param name="services">Services to append infrastructure into</param>
     /// <param name="configuration">Configuration for infrastructure services</param>
@@ -36,9 +35,33 @@ public static class DependencyInjection
                 builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
             });
         });
+        services.AddTransient<IDataSeeder, MeetupSeeder>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Configure infrastructure services for identity server and add them into given collection
+    /// </summary>
+    /// <param name="services">Services to append infrastructure into</param>
+    /// <param name="configuration">Configuration for infrastructure services</param>
+    /// <returns>Same object as services</returns>
+    /// <exception cref="NullReferenceException">Secret key was not set</exception>
+    public static IServiceCollection AddIdentityInfrastructure(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddDbContext<ApplicationContext>(options =>
+        {
+            var connectionStr = configuration.GetConnectionString("DefaultConnection");
+            options.UseSqlServer(connectionStr, builder =>
+            {
+                builder.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+            });
+        });
         services.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationContext>();
-        services.AddTransient<IDataSeeder, DataSeeder>();
+        services.AddTransient<IDataSeeder, IdentitySeeder>();
 
         return services;
     }

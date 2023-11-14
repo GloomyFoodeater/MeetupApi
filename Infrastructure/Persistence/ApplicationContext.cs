@@ -13,7 +13,7 @@ internal class ApplicationContext : IdentityDbContext<User>
     /// Connect to database with given options
     /// </summary>
     /// <param name="options">Options to configure context</param>
-    public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) { }
+    public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) => Database.EnsureCreated();
 
     #region EF Core repositories
 
