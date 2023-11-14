@@ -8,6 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using ApplicationCore.Interfaces.Services;
 using Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using static ApplicationCore.Utils.ErrorUtils;
 
 namespace Infrastructure;
 
@@ -16,6 +18,7 @@ namespace Infrastructure;
 /// </summary>
 public static class DependencyInjection
 {
+
     /// <summary>
     /// Configure infrastructure services for application and add them into given collection
     /// </summary>
@@ -26,6 +29,9 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
+        var authority = configuration.GetOrThrow("Authority");
+        var audience = configuration.GetOrThrow("Audience");
+
         services.AddTransient<IMeetupRepository, MeetupRepository>();
         services.AddDbContext<ApplicationContext>(options =>
         {
@@ -36,6 +42,13 @@ public static class DependencyInjection
             });
         });
         services.AddTransient<IDataSeeder, MeetupSeeder>();
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+             .AddJwtBearer(options =>
+             {
+                 options.Authority = authority;
+                 options.RequireHttpsMetadata = false;
+                 options.Audience = audience;
+             });
 
         return services;
     }

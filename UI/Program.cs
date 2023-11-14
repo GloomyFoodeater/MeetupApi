@@ -1,6 +1,7 @@
 using ApplicationCore.Interfaces.Services;
 using ApplicationCore.MapperProfiles;
 using ApplicationCore.Services;
+using Microsoft.OpenApi.Models;
 using static Infrastructure.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,10 +10,40 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers(options => options.SuppressAsyncSuffixInActionNames = false);
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    //options.SwaggerDoc("v1", new OpenApiInfo { Title = "MyAPI", Version = "v1" });
+    var scheme = new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "JWT Authorization header using the Bearer scheme"
+
+    };
+    var requirement = new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    };
+
+    options.AddSecurityDefinition("Bearer", scheme);
+    options.AddSecurityRequirement(requirement);
+});
 
 // Add ApplicationCore services
-builder.Services.AddAutoMapper(typeof(MeetupProfile)); 
+builder.Services.AddAutoMapper(typeof(MeetupProfile));
 builder.Services.AddTransient<MeetupService>();
 
 // Add Infrastructure services

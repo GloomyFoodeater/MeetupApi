@@ -33,6 +33,8 @@ internal class MeetupSeeder : IDataSeeder
     /// <returns><inheritdoc/></returns>
     public async Task SeedAsync()
     {
+        if (_meetupService.GetAllAsync().Result.Any()) return;
+
         await SeedMeetUp("First", "John Doe", "Hosh Snow");
         await SeedMeetUp("PARTY!", "Bob Dog", "Child Fork");
         await SeedMeetUp("Another one~~", "Sob Sob", "Hop Hop");

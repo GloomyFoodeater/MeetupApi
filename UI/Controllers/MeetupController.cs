@@ -1,7 +1,9 @@
 ﻿using ApplicationCore.DTO.Meetup;
 using ApplicationCore.Entities;
 using ApplicationCore.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static ApplicationCore.Utils.ErrorUtils;
 
 namespace UI.Controllers;
 
@@ -10,14 +12,12 @@ namespace UI.Controllers;
 /// </summary>
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Roles ="user")]
 public class MeetupController : ControllerBase
 {
     private readonly MeetupService _service;
 
     public MeetupController(MeetupService service) => _service = service;
-
-    // EF Core uses inner exception for messages from database
-    private static object ToErrorObject(Exception e) => new { Error = e.InnerException?.Message ?? e.Message };
 
     /// <summary>
     /// Endpoint for 'GET /api/<see cref="MeetupController"/>'
@@ -74,6 +74,7 @@ public class MeetupController : ControllerBase
     /// 500 for unexpected errors
     /// </returns>
     [HttpPost]
+    [Authorize(Roles = "admin")]
     public async Task<ActionResult> PostAsync([FromBody] MeetupAddDto data)
     {
         try
@@ -98,6 +99,7 @@ public class MeetupController : ControllerBase
     /// 404 for non-existent meetup,
     /// 500 for unexpected errors
     /// </returns>
+    [Authorize(Roles ="admin")]
     [HttpPut("{id}")]
     public async Task<ActionResult> PutAsync(int id, [FromBody] MeetupUpdateDto data)
     {
@@ -125,6 +127,7 @@ public class MeetupController : ControllerBase
     /// 500 for unexpected errors
     /// </returns>
     [HttpDelete("{id}")]
+    [Authorize(Roles = "admin")]
     public async Task<ActionResult> DeleteAsync(int id)
     {
         try
