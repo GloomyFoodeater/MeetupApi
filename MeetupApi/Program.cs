@@ -12,7 +12,6 @@ builder.Services.AddControllers(options => options.SuppressAsyncSuffixInActionNa
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    //options.SwaggerDoc("v1", new OpenApiInfo { Title = "MyAPI", Version = "v1" });
     var scheme = new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -49,15 +48,8 @@ builder.Services.AddTransient<MeetupService>();
 // Add Infrastructure services
 builder.Services.AddInfrastructure(builder.Configuration);
 
-var app = builder.Build();
-
 // Configure the HTTP request pipeline
-
-//if (app.Environment.IsDevelopment())
-//{
-app.UseSwagger();
-app.UseSwaggerUI();
-//}
+var app = builder.Build();
 
 // Fill database
 using (var scope = app.Services.CreateScope())
@@ -66,11 +58,11 @@ using (var scope = app.Services.CreateScope())
     await seeder.SeedAsync();
 }
 
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
