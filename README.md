@@ -14,7 +14,7 @@
 5. In .\appsetting.json
    - Assign db connection string to "ConnectionStrings.DefaultConnection"
    - Ensure that "Audience" is "meetupApi"
-   - Assign "Authority" to \<identity-server-url\>, i.e. "http://localhost:5000"
+   - Assign "Authority" to \<identity-server-url\>
 6. Run api from terminal with urls to specify listening port 
 ```
  .\MeetUpApi.exe [--urls <api-url>]
